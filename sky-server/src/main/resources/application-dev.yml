@@ -5,4 +5,11 @@ sky:
     port: 3306
     database: sky_take_out
     username: root
-    password: "3Cu+8HNO3"
+    # 真实密码写在 application-dev-local.yml（已被 .gitignore 忽略）
+    password: your-db-password
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    # 真实密钥写在 application-dev-local.yml（已被 .gitignore 忽略）
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    bucket-name: cangqiong-76
