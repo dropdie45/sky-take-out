@@ -13,3 +13,7 @@ sky:
     access-key-id: your-access-key-id
     access-key-secret: your-access-key-secret
     bucket-name: cangqiong-76
+  redis:
+    host: localhost
+    port: 16379
+    database: 10
