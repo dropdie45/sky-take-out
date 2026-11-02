@@ -5,5 +5,10 @@
 *Test.java
 **/test/
 
+# 保留订单模拟支付回归测试
+!sky-server/src/test/
+!sky-server/src/test/java/com/sky/service/impl/OrderPaymentTest.java
+!sky-server/src/test/java/com/sky/service/DeliveryRangeServiceTest.java
+
 # 本地私有配置（含真实数据库密码与阿里云 AccessKey），禁止提交
 **/application-*-local.yml

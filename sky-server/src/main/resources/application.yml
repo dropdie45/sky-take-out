@@ -37,6 +37,12 @@ logging:
         controller: info
 
 sky:
+  shop:
+    # 完整门店地址，也可在 application-dev-local.yml 中配置 sky.shop.address。
+    address: ${SKY_SHOP_ADDRESS:北京市海淀区北太平庄地铁站}
+  baidu:
+    # 百度地图服务端应用 AK，勿将真实密钥提交到仓库。
+    ak: ${BAIDU_MAP_AK:}
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: itcast
