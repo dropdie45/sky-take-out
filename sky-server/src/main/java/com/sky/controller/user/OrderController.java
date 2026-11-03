@@ -23,6 +23,13 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @GetMapping("/reminder/{id}")
+    @ApiOperation("用户催单")
+    public Result<Void> reminder(@PathVariable Long id) {
+        orderService.reminder(id);
+        return Result.success();
+    }
+
 
     @PostMapping("/payment")
     @ApiOperation("订单模拟支付（不实际扣款）")

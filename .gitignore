@@ -9,6 +9,11 @@
 !sky-server/src/test/
 !sky-server/src/test/java/com/sky/service/impl/OrderPaymentTest.java
 !sky-server/src/test/java/com/sky/service/DeliveryRangeServiceTest.java
+!sky-server/src/test/java/com/sky/task/OrderTaskTest.java
+!sky-server/src/test/java/com/sky/websocket/WebSocketServerTest.java
+!sky-server/src/test/java/com/sky/service/impl/ReportServiceTest.java
+!sky-server/src/test/java/com/sky/service/impl/WorkspaceServiceTest.java
+!sky-server/src/test/java/com/sky/mapper/ReportMapperTest.java
 
 # 本地私有配置（含真实数据库密码与阿里云 AccessKey），禁止提交
 **/application-*-local.yml

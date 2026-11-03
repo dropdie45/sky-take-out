@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface UserMapper {
+    Integer countByMap(java.util.Map<String, Object> conditions);
 
     /**
      * 根据openid查询用户

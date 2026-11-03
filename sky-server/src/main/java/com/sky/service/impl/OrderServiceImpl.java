@@ -24,10 +24,13 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -50,6 +53,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private DeliveryRangeService deliveryRangeService;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @Override
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) {
@@ -87,7 +93,46 @@ public class OrderServiceImpl implements OrderService {
             if (!Orders.PAID.equals(latest.getPayStatus())) {
                 throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
             }
+            return;
         }
+        // 提交后再通知，避免商家收到尚未落库或已回滚的订单。
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    sendOrderNotification(1, order);
+                }
+            });
+        } else {
+            sendOrderNotification(1, order);
+        }
+    }
+
+    @Override
+    public void reminder(Long id) {
+        Long userId = BaseContext.getCurrentId();
+        if (userId == null) {
+            throw new OrderBusinessException(MessageConstant.USER_NOT_LOGIN);
+        }
+        Orders order = id == null ? null : orderMapper.getById(id);
+        if (order == null || !userId.equals(order.getUserId())) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        if (!Orders.PAID.equals(order.getPayStatus()) ||
+                !(Orders.TO_BE_CONFIRMED.equals(order.getStatus()) ||
+                  Orders.CONFIRMED.equals(order.getStatus()) ||
+                  Orders.DELIVERY_IN_PROGRESS.equals(order.getStatus()))) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        sendOrderNotification(2, order);
+    }
+
+    private void sendOrderNotification(int type, Orders order) {
+        JSONObject message = new JSONObject();
+        message.put("type", type);
+        message.put("orderId", order.getId());
+        message.put("content", "订单号：" + order.getNumber());
+        webSocketServer.sendToAllClient(message.toJSONString());
     }
 
     private Orders getPaymentOrder(String orderNumber) {

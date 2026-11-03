@@ -11,10 +11,19 @@ import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import com.sky.dto.GoodsSalesDTO;
 
 
 @Mapper
 public interface OrderMapper {
+    Double sumByMap(Map<String, Object> conditions);
+
+    Integer countByMap(Map<String, Object> conditions);
+
+    List<GoodsSalesDTO> getSalesTop10(@Param("begin") LocalDateTime begin,
+                                    @Param("end") LocalDateTime end);
+
     @Select("select * from orders where number = #{number} and user_id = #{userId}")
     Orders getByNumberAndUserId(@Param("number") String number, @Param("userId") Long userId);
 
@@ -65,8 +74,17 @@ public interface OrderMapper {
      * @param orderTime
      * @return
      */
-    @Select("SELECT * FROM orders WHERE status = #{status} and order_time < #{orderTIme}")
-    List<Orders> getByStatusAndOrderTime(Integer status, LocalDateTime orderTime);
+    @Select("SELECT * FROM orders WHERE status = #{status} and order_time < #{orderTime}")
+    List<Orders> getByStatusAndOrderTime(@Param("status") Integer status,
+                                       @Param("orderTime") LocalDateTime orderTime);
+
+    /** 定时取消时再次校验状态，避免覆盖查询之后发生的支付。 */
+    @Update("update orders set status = 6, cancel_reason = #{cancelReason}, cancel_time = #{cancelTime} " +
+            "where id = #{id} and status = 1 and pay_status = 0")
+    int cancelTimedOutOrder(Orders order);
+
+    @Update("update orders set status = 5, delivery_time = #{deliveryTime} where id = #{id} and status = 4")
+    int completeDeliveryOrder(Orders order);
 
 
 }

@@ -33,7 +33,7 @@ public class OrderTask {
                 orders.setStatus(Orders.CANCELLED);
                 orders.setCancelReason("订单超时，自动取消");
                 orders.setCancelTime(LocalDateTime.now());
-                orderMapper.update(orders);
+                orderMapper.cancelTimedOutOrder(orders);
             }
         }
 
@@ -49,7 +49,8 @@ public class OrderTask {
         if(ordersList != null && ordersList.size()>0){
             for (Orders orders : ordersList){
                 orders.setStatus(Orders.COMPLETED);
-                orderMapper.update(orders);
+                orders.setDeliveryTime(LocalDateTime.now());
+                orderMapper.completeDeliveryOrder(orders);
             }
         }
     }

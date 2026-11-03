@@ -15,6 +15,7 @@ import java.util.List;
 
 @Mapper
 public interface SetmealMapper {
+    Integer countByMap(java.util.Map<String, Object> conditions);
 
     /**
      * 根据分类id查询套餐的数量

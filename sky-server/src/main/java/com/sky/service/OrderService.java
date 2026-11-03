@@ -14,6 +14,9 @@ public interface OrderService {
     /** 将当前用户的待付款订单更新为已支付、待接单。 */
     void paySuccess(String outTradeNo);
 
+    /** 当前用户催促已支付且尚未完成的订单。 */
+    void reminder(Long id);
+
     /**
      * 用户下单
      * @param ordersSubmitDTO
